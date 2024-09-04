@@ -4,11 +4,11 @@ use serde_json::Value;
 
 #[derive(Clone, Debug, Serialize, Deserialize, new)]
 pub struct DomainEvent {
-    id: String,
-    entity: String,
-    sequence: usize,
-    event_type: String,
-    event_version: String,
-    payload: Value,
-    metadata: Value,
+    pub id: String,
+    pub entity: String,
+    pub sequence: usize,
+    pub event_type: String,
+    pub event_version: String,
+    pub payload: Value,
+    pub metadata: Value,
 }

@@ -41,8 +41,8 @@ run_task = { name = [
 
 [tasks.lambda-build-publisher-kinesis]
 command = "cargo"
-args = ["lambda", "build", "--bin", "publisher_kinesis"]
+args = ["lambda", "build", "--bin", "publisher_kinesis", "--release"]
 
 [tasks.lambda-build-projector-s3-audit]
 command = "cargo"
-args = ["lambda", "build", "--bin", "projector_s3_audit"]
+args = ["lambda", "build", "--bin", "projector_s3_audit", "--release"]

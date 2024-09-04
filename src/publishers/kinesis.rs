@@ -21,8 +21,10 @@ pub struct EventLogRecord {
     event_type: String,
     aggregate_id: String,
     aggregate_type: String,
-    metadata: String,
-    payload: String,
+    #[serde(with = "serde_bytes")]
+    metadata: Vec<u8>,
+    #[serde(with = "serde_bytes")]
+    payload: Vec<u8>,
     event_version: String,
     aggregate_id_sequence: usize,
 }
@@ -31,8 +33,12 @@ impl TryFrom<EventLogRecord> for DomainEvent {
     type Error = serde_json::Error;
 
     fn try_from(event: EventLogRecord) -> Result<Self, Self::Error> {
-        let payload = serde_json::to_value(&event.payload)?;
-        let metadata = serde_json::to_value(&event.metadata)?;
+        let payload = serde_json::to_value(
+            &String::from_utf8(event.payload).expect("Cannot convert the Payload to a String"),
+        )?;
+        let metadata = serde_json::to_value(
+            &String::from_utf8(event.metadata).expect("Cannot convert the Metadata to a String"),
+        )?;
 
         Ok(DomainEvent::new(
             event.aggregate_id,
