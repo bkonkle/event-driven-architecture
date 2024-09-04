@@ -15,3 +15,20 @@ resource "aws_lambda_event_source_mapping" "publisher_kinesis_dynamodb_trigger" 
   starting_position      = "LATEST"
   maximum_retry_attempts = 5
 }
+
+module "lambda_projector_s3_audit" {
+  source = "terraform-aws-modules/lambda/aws"
+
+  function_name = "projector-s3-audit"
+  description   = "The S3 audit Projector"
+  handler       = "bootstrap"
+  runtime       = "provided.al2023"
+
+  source_path = "../../target/lambda/projector_s3_audit"
+}
+
+resource "aws_lambda_event_source_mapping" "projector_s3_audit_kinesis_trigger" {
+  event_source_arn  = resource.aws_kinesis_stream.event_stream.arn
+  function_name     = module.lambda_projector_s3_audit.lambda_function_arn
+  starting_position = "LATEST"
+}

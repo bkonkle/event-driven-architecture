@@ -89,7 +89,9 @@ impl Kinesis {
             .put_record()
             .stream_name(STREAM_NAME)
             .partition_key(event_log.aggregate_type)
-            .data(Blob::new(data));
+            .data(Blob::new(data))
+            .send()
+            .await?;
 
         Ok(())
     }

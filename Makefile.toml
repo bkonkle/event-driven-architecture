@@ -34,8 +34,15 @@ command = "cargo"
 args = ["fmt", "--all", "--", "--check"]
 
 [tasks.lambda-build]
-run_task = { name = ["lambda-build-publisher-kinesis"], parallel = true }
+run_task = { name = [
+    "lambda-build-publisher-kinesis",
+    "lambda-build-projector-s3-audit",
+], parallel = true }
 
 [tasks.lambda-build-publisher-kinesis]
 command = "cargo"
 args = ["lambda", "build", "--bin", "publisher_kinesis"]
+
+[tasks.lambda-build-projector-s3-audit]
+command = "cargo"
+args = ["lambda", "build", "--bin", "projector_s3_audit"]
