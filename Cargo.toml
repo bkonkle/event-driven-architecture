@@ -12,7 +12,7 @@ aws-sdk-dynamodb = "1.44"
 axum = { version = "0.7", features = ["macros"] }
 chrono = { version = "0.4", features = ["serde"] }
 cqrs-es = "0.4"
-dynamo-es = "0.4"
+dynamo-es = { git = "https://github.com/bkonkle/dynamo-es", ref = "30770c1dbcd23af9fc2a6c78d94756eac8d78166" }
 log = { version = "0.4", features = ["kv_unstable_std"] }
 serde = "1"
 thiserror = "1.0"

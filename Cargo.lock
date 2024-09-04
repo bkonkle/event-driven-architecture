@@ -621,8 +621,7 @@ dependencies = [
 [[package]]
 name = "dynamo-es"
 version = "0.4.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d781bb2b93b5794669d8794fda66c2b6394928684e8e1ef2b75c60f1a4d4e61b"
+source = "git+https://github.com/bkonkle/dynamo-es#30770c1dbcd23af9fc2a6c78d94756eac8d78166"
 dependencies = [
  "async-trait",
  "aws-sdk-dynamodb",
