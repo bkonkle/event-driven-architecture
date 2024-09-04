@@ -5,16 +5,24 @@ authors = ["Brandon Konkle <brandon@konkle.us>"]
 edition = "2021"
 
 [dependencies]
-anyhow = "1"
+anyhow = "1.0"
 async-trait = "0.1"
 aws-config = "1.5"
+aws_lambda_events = "0.15"
 aws-sdk-dynamodb = "1.44"
+aws-sdk-kinesis = "1.42"
 axum = { version = "0.7", features = ["macros"] }
 chrono = { version = "0.4", features = ["serde"] }
 cqrs-es = "0.4"
+derive-new = "0.7"
 dynamo-es = { git = "https://github.com/bkonkle/dynamo-es", ref = "30770c1dbcd23af9fc2a6c78d94756eac8d78166" }
+lambda_runtime = "0.13"
 log = { version = "0.4", features = ["kv_unstable_std"] }
-serde = "1"
+serde = "1.0"
+serde_dynamo = "4.2"
+serde_json = "1.0"
 thiserror = "1.0"
+tracing = "0.1"
+tracing-subscriber = "0.3"
 tokio = { version = "1", features = ["full"] }
 ulid = "1.1"
