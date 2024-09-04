@@ -32,3 +32,10 @@ args = [
 [tasks.format]
 command = "cargo"
 args = ["fmt", "--all", "--", "--check"]
+
+[tasks.lambda-build]
+run_task = { name = ["lambda-build-publisher-kinesis"], parallel = true }
+
+[tasks.lambda-build-publisher-kinesis]
+command = "cargo"
+args = ["lambda", "build", "--bin", "publisher_kinesis"]

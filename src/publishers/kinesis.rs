@@ -1,18 +1,20 @@
 use aws_lambda_events::dynamodb::{Event, EventRecord};
+use aws_sdk_kinesis::primitives::Blob;
 use derive_new::new;
 use lambda_runtime::LambdaEvent;
 use serde::{Deserialize, Serialize};
-use serde_dynamo::AttributeValue;
+
+use crate::domains::DomainEvent;
 
 const STREAM_NAME: &str = "event-stream";
 
 /// The Kinesis Publisher
-#[derive(Debug, Clone, new)]
+#[derive(Clone, Debug, new)]
 pub struct Kinesis {
     client: aws_sdk_kinesis::Client,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct EventLogRecord {
     aggregate_type_and_id: String,
@@ -23,6 +25,25 @@ pub struct EventLogRecord {
     payload: String,
     event_version: String,
     aggregate_id_sequence: usize,
+}
+
+impl TryFrom<EventLogRecord> for DomainEvent {
+    type Error = serde_json::Error;
+
+    fn try_from(event: EventLogRecord) -> Result<Self, Self::Error> {
+        let payload = serde_json::to_value(&event.payload)?;
+        let metadata = serde_json::to_value(&event.metadata)?;
+
+        Ok(DomainEvent::new(
+            event.aggregate_id,
+            event.aggregate_type,
+            event.aggregate_id_sequence,
+            event.event_type,
+            event.event_version,
+            payload,
+            metadata,
+        ))
+    }
 }
 
 impl Kinesis {
@@ -61,11 +82,20 @@ impl Kinesis {
             STREAM_NAME
         );
 
+        let event: DomainEvent = event_log.clone().try_into()?;
+        let data = serde_json::to_string(&event)?;
+
+        self.client
+            .put_record()
+            .stream_name(STREAM_NAME)
+            .partition_key(event_log.aggregate_type)
+            .data(Blob::new(data));
+
         Ok(())
     }
 }
 
-/// CQRS Domain errors
+/// Publisher errors
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     /// Not found error

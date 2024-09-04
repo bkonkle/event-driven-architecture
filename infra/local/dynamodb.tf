@@ -1,9 +1,11 @@
 module "dynamodb_event_log" {
   source = "terraform-aws-modules/dynamodb-table/aws"
 
-  name      = "event_log"
-  hash_key  = "AggregateTypeAndId"
-  range_key = "AggregateIdSequence"
+  name             = "event_log"
+  hash_key         = "AggregateTypeAndId"
+  range_key        = "AggregateIdSequence"
+  stream_enabled   = true
+  stream_view_type = "NEW_IMAGE"
 
   attributes = [
     {

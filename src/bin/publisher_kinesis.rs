@@ -1,5 +1,5 @@
 use aws_config::BehaviorVersion;
-use aws_lambda_events::event::dynamodb::{Event, EventRecord};
+use aws_lambda_events::event::dynamodb::Event;
 use event_driven_architecture::publishers;
 use lambda_runtime::{service_fn, Error, LambdaEvent};
 
