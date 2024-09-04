@@ -1,0 +1,20 @@
+[package]
+name = "event-driven-architecture"
+version = "0.1.0"
+authors = ["Brandon Konkle <brandon@konkle.us>"]
+edition = "2021"
+
+[dependencies]
+anyhow = "1"
+async-trait = "0.1"
+aws-config = "1.5"
+aws-sdk-dynamodb = "1.44"
+axum = { version = "0.7", features = ["macros"] }
+chrono = { version = "0.4", features = ["serde"] }
+cqrs-es = "0.4"
+dynamo-es = "0.4"
+log = { version = "0.4", features = ["kv_unstable_std"] }
+serde = "1"
+thiserror = "1.0"
+tokio = { version = "1", features = ["full"] }
+ulid = "1.1"

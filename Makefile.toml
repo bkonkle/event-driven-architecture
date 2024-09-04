@@ -1,0 +1,34 @@
+[tasks.dev]
+env = { "RUST_LOG" = "info,sqlx::query=warn", "RUST_BACKTRACE" = 1 }
+command = "cargo"
+args = ["run", "--bin", "event-driven-architecture"]
+watch = true
+
+[tasks.docker]
+cwd = "./"
+command = "docker-compose"
+args = ["-f", "docker-compose.yml", "${@}"]
+
+[tasks.tf]
+cwd = "./infra/local"
+command = "terraform"
+args = ["${@}"]
+
+[tasks.audit]
+command = "cargo"
+args = ["audit"]
+
+[tasks.lint]
+command = "cargo"
+args = [
+    "clippy",
+    "--tests",
+    "--examples",
+    "--all-targets",
+    "--all-features",
+    "--workspace",
+]
+
+[tasks.format]
+command = "cargo"
+args = ["fmt", "--all", "--", "--check"]
