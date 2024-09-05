@@ -10,10 +10,15 @@ module "lambda_publisher_kinesis" {
 }
 
 resource "aws_lambda_event_source_mapping" "publisher_kinesis_dynamodb_trigger" {
-  event_source_arn       = module.dynamodb_event_log.dynamodb_table_stream_arn
-  function_name          = module.lambda_publisher_kinesis.lambda_function_arn
-  starting_position      = "LATEST"
-  maximum_retry_attempts = 5
+  event_source_arn  = module.dynamodb_event_log.dynamodb_table_stream_arn
+  function_name     = module.lambda_publisher_kinesis.lambda_function_arn
+  starting_position = "LATEST"
+
+  destination_config {
+    on_failure {
+      destination_arn = module.sqs_publisher_kinesis_dead_letter.queue_arn
+    }
+  }
 }
 
 module "lambda_projector_s3_audit" {
@@ -28,7 +33,15 @@ module "lambda_projector_s3_audit" {
 }
 
 resource "aws_lambda_event_source_mapping" "projector_s3_audit_kinesis_trigger" {
-  event_source_arn  = resource.aws_kinesis_stream.event_stream.arn
-  function_name     = module.lambda_projector_s3_audit.lambda_function_arn
-  starting_position = "LATEST"
+  event_source_arn        = resource.aws_kinesis_stream.event_stream.arn
+  function_name           = module.lambda_projector_s3_audit.lambda_function_arn
+  starting_position       = "LATEST"
+  maximum_retry_attempts  = 5
+  function_response_types = ["ReportBatchItemFailures"]
+
+  destination_config {
+    on_failure {
+      destination_arn = module.sqs_s3_audit_dead_letter.queue_arn
+    }
+  }
 }
