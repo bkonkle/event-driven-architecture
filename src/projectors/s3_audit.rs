@@ -3,7 +3,10 @@ use aws_sdk_s3::primitives::ByteStream;
 use derive_new::new;
 use lambda_runtime::LambdaEvent;
 
-use crate::domains::DomainEvent;
+use crate::{
+    domains::{tasks, DomainEvent},
+    utils,
+};
 
 const BUCKET_NAME: &str = "event-audit";
 
@@ -27,6 +30,17 @@ impl S3Audit {
             let event: DomainEvent = serde_json::from_str(&record_data)?;
 
             println!(">- event -> {:?}", event);
+
+            if event.entity == tasks::AGGREGATE_TYPE {
+                let payload: tasks::Event = serde_json::from_str(&event.payload)?;
+                if let tasks::Event::Updated { update, .. } = payload {
+                    if let utils::Update::Value(summary) = update.summary {
+                        if summary == "5" {
+                            return Err("Invalid summary".into());
+                        }
+                    }
+                }
+            }
 
             self.client
                 .put_object()

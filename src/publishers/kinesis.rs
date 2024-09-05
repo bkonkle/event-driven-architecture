@@ -33,12 +33,10 @@ impl TryFrom<EventLogRecord> for DomainEvent {
     type Error = serde_json::Error;
 
     fn try_from(event: EventLogRecord) -> Result<Self, Self::Error> {
-        let payload = serde_json::to_value(
-            &String::from_utf8(event.payload).expect("Cannot convert the Payload to a String"),
-        )?;
-        let metadata = serde_json::to_value(
-            &String::from_utf8(event.metadata).expect("Cannot convert the Metadata to a String"),
-        )?;
+        let payload =
+            String::from_utf8(event.payload).expect("Cannot convert the Payload to a String");
+        let metadata =
+            String::from_utf8(event.metadata).expect("Cannot convert the Metadata to a String");
 
         Ok(DomainEvent::new(
             event.aggregate_id,
