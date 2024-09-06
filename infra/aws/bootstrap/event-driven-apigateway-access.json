@@ -1,0 +1,43 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "CloudWatchLogReadAccess",
+            "Effect": "Allow",
+            "Action": [
+                "logs:DescribeLogGroups",
+                "logs:DescribeLogStreams",
+                "logs:GetLogEvents",
+                "logs:FilterLogEvents"
+            ],
+            "Resource": "arn:aws:logs:*:*:log-group:*"
+        },
+        {
+            "Sid": "CloudWatchLogPutAccess",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogDelivery",
+                "logs:PutResourcePolicy",
+                "logs:UpdateLogDelivery",
+                "logs:DeleteLogDelivery",
+                "logs:CreateLogGroup",
+                "logs:DescribeResourcePolicies",
+                "logs:GetLogDelivery",
+                "logs:ListLogDeliveries"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "APIGatewayAccess",
+            "Effect": "Allow",
+            "Action": "apigateway:*",
+            "Resource": [
+                "arn:aws:apigateway:*::/apis",
+                "arn:aws:apigateway:*::/apis/*",
+                "arn:aws:apigateway:*::/apis/*/*",
+                "arn:aws:apigateway:*::/v2/apis/*",
+                "arn:aws:apigateway:*::/tags/*"
+            ]
+        }
+    ]
+}

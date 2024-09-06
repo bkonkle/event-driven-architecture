@@ -32,18 +32,6 @@
             "Resource": "arn:aws:kinesis:*:*:stream/event-driven-*"
         },
         {
-            "Sid": "APIGatewayScopedAccess",
-            "Effect": "Allow",
-            "Action": "apigateway:*",
-            "Resource": [
-                "arn:aws:apigateway:*::/apis",
-                "arn:aws:apigateway:*::/apis/*",
-                "arn:aws:apigateway:*::/v2/apis/*",
-                "arn:aws:apigateway:*::/tags/*",
-                "arn:aws:apigateway:*::/tags/arn:aws:apigateway:*::/v2/apis/*"
-            ]
-        },
-        {
             "Sid": "IAMScopedAccess",
             "Effect": "Allow",
             "Action": "iam:*",

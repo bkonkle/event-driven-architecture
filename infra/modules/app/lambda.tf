@@ -14,8 +14,16 @@ module "lambda_http_api" {
   description   = "The HTTP API"
   handler       = "bootstrap"
   runtime       = "provided.al2023"
+  publish       = true
 
   source_path = "../../target/lambda/event-driven-architecture"
+
+  allowed_triggers = {
+    apigateway = {
+      service    = "apigateway"
+      source_arn = "${module.api_gateway.api_execution_arn}/*/*"
+    }
+  }
 
   attach_policy_statements = true
   policy_statements = {
@@ -45,6 +53,8 @@ module "lambda_http_api" {
       }
     }
   }
+
+  cloudwatch_logs_retention_in_days = 7
 }
 
 module "label_publisher_kinesis" {
@@ -99,6 +109,8 @@ module "lambda_publisher_kinesis" {
       resources = [aws_kinesis_stream.event_stream.arn]
     },
   }
+
+  cloudwatch_logs_retention_in_days = 7
 }
 
 module "label_projector_s3_audit" {
@@ -160,4 +172,6 @@ module "lambda_projector_s3_audit" {
       ]
     }
   }
+
+  cloudwatch_logs_retention_in_days = 7
 }

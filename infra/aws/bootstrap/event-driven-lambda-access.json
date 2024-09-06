@@ -13,12 +13,6 @@
             ]
         },
         {
-            "Sid": "CloudWatchLogListAccess",
-            "Effect": "Allow",
-            "Action": "logs:DescribeLogGroups",
-            "Resource": "arn:aws:logs:*:*:log-group::log-stream:"
-        },
-        {
             "Sid": "LambdaScopedAccess",
             "Effect": "Allow",
             "Action": "lambda:*",
@@ -43,12 +37,6 @@
                 "lambda:GetEventSourceMapping"
             ],
             "Resource": "arn:aws:lambda:*:*:event-source-mapping:*"
-        },
-        {
-            "Sid": "CloudWatchLogCreateLogDeliveryAccess",
-            "Effect": "Allow",
-            "Action": "logs:CreateLogDelivery",
-            "Resource": "*"
         }
     ]
 }

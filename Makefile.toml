@@ -43,7 +43,7 @@ run_task = { name = [
     "lambda-build-http-api",
     "lambda-build-publisher-kinesis",
     "lambda-build-projector-s3-audit",
-], parallel = true }
+] }
 
 [tasks.lambda-build-http-api]
 command = "cargo"

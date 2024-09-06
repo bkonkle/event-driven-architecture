@@ -8,6 +8,7 @@ async fn main() -> Result<(), Error> {
     tracing_subscriber::fmt()
         .with_max_level(tracing::Level::INFO)
         .with_target(false)
+        .with_ansi(false)
         .without_time()
         .init();
 
