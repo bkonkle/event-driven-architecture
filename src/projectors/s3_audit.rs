@@ -28,6 +28,8 @@ impl S3Audit {
             event.payload.records.len(),
         );
 
+        let mut batch_item_failures = Vec::new();
+
         for record in event.payload.records {
             let sequence_number = record.kinesis.sequence_number.clone();
 
@@ -43,18 +45,15 @@ impl S3Audit {
                     "Failed to process event"
                 );
 
-                // Return the failed item right away since this is within a stream. Lambda will
-                // begin to retry processing from this failed item onwards.
-                return Ok(KinesisEventResponse {
-                    batch_item_failures: vec![KinesisBatchItemFailure {
-                        item_identifier: sequence_number,
-                    }],
+                // Add the failed item to the list of failures
+                batch_item_failures.push(KinesisBatchItemFailure {
+                    item_identifier: sequence_number,
                 });
             };
         }
 
         Ok(KinesisEventResponse {
-            batch_item_failures: vec![],
+            batch_item_failures,
         })
     }
 
