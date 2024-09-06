@@ -1,0 +1,54 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "CloudWatchLogScopedAccess",
+            "Effect": "Allow",
+            "Action": "logs:*",
+            "Resource": [
+                "arn:aws:logs:*:*:log-group:/aws/lambda/event-driven-*",
+                "arn:aws:logs:*:*:log-group:/aws/lambda/event-driven-*:log-stream:*",
+                "arn:aws:logs:*:*:log-group:/aws/apigateway/event-driven-*",
+                "arn:aws:logs:*:*:log-group:/aws/apigateway/event-driven-*:log-stream:*"
+            ]
+        },
+        {
+            "Sid": "CloudWatchLogListAccess",
+            "Effect": "Allow",
+            "Action": "logs:DescribeLogGroups",
+            "Resource": "arn:aws:logs:*:*:log-group::log-stream:"
+        },
+        {
+            "Sid": "LambdaScopedAccess",
+            "Effect": "Allow",
+            "Action": "lambda:*",
+            "Resource": "arn:aws:lambda:*:*:function:event-driven-*"
+        },
+        {
+            "Sid": "LambdaEventSourceMappingGeneralAccess",
+            "Effect": "Allow",
+            "Action": [
+                "lambda:CreateEventSourceMapping",
+                "lambda:GetEventSourceMapping"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "LambdaEventSourceMappingAccess",
+            "Effect": "Allow",
+            "Action": [
+                "lambda:CreateEventSourceMapping",
+                "lambda:UpdateEventSourceMapping",
+                "lambda:DeleteEventSourceMapping",
+                "lambda:GetEventSourceMapping"
+            ],
+            "Resource": "arn:aws:lambda:*:*:event-source-mapping:*"
+        },
+        {
+            "Sid": "CloudWatchLogCreateLogDeliveryAccess",
+            "Effect": "Allow",
+            "Action": "logs:CreateLogDelivery",
+            "Resource": "*"
+        }
+    ]
+}

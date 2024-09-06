@@ -10,6 +10,7 @@ extern crate log;
 
 use std::{io, panic::PanicInfo, sync::Arc};
 
+use anyhow::anyhow;
 use aws_config::BehaviorVersion;
 use axum::{
     routing::{get, post},
@@ -73,18 +74,33 @@ async fn main() -> anyhow::Result<()> {
         )
         .with_state(state);
 
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
-        .await
-        .expect("Unable to bind TcpListener");
+    if is_running_on_lambda() {
+        // To run with AWS Lambda runtime, wrap in our `LambdaLayer`
+        let app = tower::ServiceBuilder::new()
+            .layer(axum_aws_lambda::LambdaLayer::default())
+            .service(app);
 
-    info!(
-        "Started on port: {port}",
-        port = listener.local_addr().expect("No server address found")
-    );
+        if let Err(error) = lambda_http::run(app).await {
+            return Err(anyhow!("Lambda HTTP error: {}", error));
+        };
+    } else {
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
+            .await
+            .expect("Unable to bind TcpListener");
 
-    axum::serve(listener, app).await.unwrap();
+        info!(
+            "Started on port: {port}",
+            port = listener.local_addr().expect("No server address found")
+        );
+
+        axum::serve(listener, app).await?;
+    }
 
     Ok(())
+}
+
+fn is_running_on_lambda() -> bool {
+    std::env::var("AWS_LAMBDA_RUNTIME_API").is_ok()
 }
 
 /// A generic function to log stacktraces on panic

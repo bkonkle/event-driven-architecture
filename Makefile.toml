@@ -40,9 +40,14 @@ args = ["fmt", "--all", "--", "--check"]
 
 [tasks.lambda-build]
 run_task = { name = [
+    "lambda-build-http-api",
     "lambda-build-publisher-kinesis",
     "lambda-build-projector-s3-audit",
 ], parallel = true }
+
+[tasks.lambda-build-http-api]
+command = "cargo"
+args = ["lambda", "build", "--release"]
 
 [tasks.lambda-build-publisher-kinesis]
 command = "cargo"

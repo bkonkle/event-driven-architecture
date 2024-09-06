@@ -13,12 +13,14 @@ aws-sdk-dynamodb = "1.44"
 aws-sdk-kinesis = "1.42"
 aws-sdk-s3 = "1.48"
 axum = { version = "0.7", features = ["macros"] }
+axum-aws-lambda = "0.8"
 backtrace = "0.3"
 chrono = { version = "0.4", features = ["serde"] }
 cqrs-es = "0.4"
 crossterm = "0.28"
 derive-new = "0.7"
 dynamo-es = "0.4"
+lambda_http = "0.13"
 lambda_runtime = "0.13"
 log = { version = "0.4", features = ["kv_unstable_std"] }
 serde = "1.0"
@@ -29,5 +31,6 @@ thiserror = "1.0"
 tracing = "0.1"
 tracing-subscriber = "0.3"
 tokio = { version = "1", features = ["full"] }
+tower = "0.4"
 tower-http = { version = "0.5", features = ["trace"] }
 ulid = "1.1"

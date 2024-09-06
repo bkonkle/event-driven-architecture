@@ -1,3 +1,52 @@
+module "label_http_api" {
+  source    = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.25.0"
+  namespace = var.namespace
+  stage     = var.environment
+  name      = "http-api"
+  tags      = local.common_tags
+  delimiter = "-"
+}
+
+module "lambda_http_api" {
+  source = "terraform-aws-modules/lambda/aws"
+
+  function_name = module.label_http_api.id
+  description   = "The HTTP API"
+  handler       = "bootstrap"
+  runtime       = "provided.al2023"
+
+  source_path = "../../target/lambda/event-driven-architecture"
+
+  attach_policy_statements = true
+  policy_statements = {
+    dynamodb = {
+      effect = "Allow",
+      actions = [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:DescribeStream",
+        "dynamodb:ListStreams"
+      ]
+      resources = [module.dynamodb_event_log.dynamodb_table_stream_arn]
+    }
+  }
+
+  assume_role_policy_statements = {
+    dynamodb = {
+      effect = "Allow",
+      actions = [
+        "sts:AssumeRole"
+      ],
+      principals = {
+        value = {
+          type        = "Service"
+          identifiers = ["apigateway.amazonaws.com"]
+        }
+      }
+    }
+  }
+}
+
 module "label_publisher_kinesis" {
   source    = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.25.0"
   namespace = var.namespace
@@ -98,5 +147,17 @@ module "lambda_projector_s3_audit" {
       ],
       resources = [aws_kinesis_stream.event_stream.arn]
     },
+    s3 = {
+      effect = "Allow",
+      actions = [
+        "s3:PutObject",
+        "s3:ListBucket",
+        "s3:GetObject"
+      ],
+      resources = [
+        "arn:aws:s3:::${module.s3_event_audit.s3_bucket_id}/*",
+        "arn:aws:s3:::${module.s3_event_audit.s3_bucket_id}"
+      ]
+    }
   }
 }
