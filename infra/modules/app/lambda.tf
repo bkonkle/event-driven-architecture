@@ -92,6 +92,10 @@ module "lambda_publisher_kinesis" {
 
   source_path = "../../target/lambda/publisher_kinesis"
 
+  environment_variables = {
+    EVENT_STREAM_NAME = aws_kinesis_stream.event_stream.name
+  }
+
   attach_dead_letter_policy = true
   dead_letter_target_arn    = module.sqs_publisher_kinesis_dead_letter.queue_arn
 
@@ -121,7 +125,7 @@ module "lambda_publisher_kinesis" {
       actions = [
         "kinesis:PutRecord",
         "kinesis:PutRecords"
-      ],
+      ]
       resources = [aws_kinesis_stream.event_stream.arn]
     },
   }
@@ -147,6 +151,10 @@ module "lambda_projector_s3_audit" {
   runtime       = "provided.al2023"
 
   source_path = "../../target/lambda/projector_s3_audit"
+
+  environment_variables = {
+    AUDIT_BUCKET_NAME = module.s3_event_audit.s3_bucket_id
+  }
 
   attach_dead_letter_policy = true
   dead_letter_target_arn    = module.sqs_projector_s3_audit_dead_letter.queue_arn

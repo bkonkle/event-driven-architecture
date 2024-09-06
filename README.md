@@ -2,6 +2,10 @@
 
 ## Local Development
 
+This is a work-in-progress. Since API Gateway is a premium LocalStack feature, my goal is to run locally without it using a local process. It will connect to LocalStack for DynamoDB and the downstream Kinesis and Lambda operations that it will trigger, however.
+
+TODO: Need to update local operation after adapting for API Gateway.
+
 ```sh
 pipx install cargo-lambda
 
@@ -53,3 +57,43 @@ cd ../../
 
 AWS_PROFILE=event-driven-root cargo make tf-dev apply
 ```
+
+From there, you can find your API Gateway in the AWS Console. Use the URL for the "dev" stage to test your API. Start off by creating a new Task by calling `POST /path/to/api/gateway/dev/tasks`:
+
+```json
+{
+    "name": "My New Task",
+    "summary": "Task Summary"
+}
+```
+
+Retrieve the task to make sure it was saved correctly by calling `GET /path/to/api/gateway/dev/tasks/{id}`. You should see the task you created:
+
+```json
+{
+    "aggregate_type": "Task",
+    "command_id": "01J73SBWHEBMP8Z07HYZR5BER4",
+    "id": "01J73SBWHE373VXWZTF7SJADD9",
+    "task": {
+        "id": "01J73SBWHE373VXWZTF7SJADD9",
+        "created_at": "2024-09-06T13:46:18.567497226Z",
+        "updated_at": "2024-09-06T13:46:18.567497226Z",
+        "name": "My New Task",
+        "summary": "My task summary",
+        "done": false,
+        "deleted": false
+    }
+}
+```
+
+In this example app, the IDs are lexicographically sortable, so you can compare Command IDs with each other to determine if the last command executed is older or newer than another Command ID.
+
+To update the task, call `PATCH /path/to/api/gateway/dev/tasks/{id}`:
+
+```json
+{
+    "summary": "My new task summary"
+}
+```
+
+You should see the updated record returned in the response.

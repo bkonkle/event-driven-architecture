@@ -9,8 +9,6 @@ use serde::{Deserialize, Serialize};
 
 use crate::domains::DomainEvent;
 
-const STREAM_NAME: &str = "event-stream";
-
 /// The Kinesis Publisher
 #[derive(Clone, Debug, new)]
 pub struct Kinesis {
@@ -98,15 +96,16 @@ impl Kinesis {
     }
 
     pub async fn handle_record(&self, record: &EventRecord) -> Result<(), lambda_runtime::Error> {
-        let item = &record.change.new_image;
+        let stream_name = std::env::var("EVENT_STREAM_NAME").unwrap_or_default();
 
+        let item = &record.change.new_image;
         let event_log: EventLogRecord = serde_dynamo::from_item(item.clone())?;
 
         tracing::info!(
             "Publishing domain event {} for id {} to {}",
             event_log.event_type,
             event_log.aggregate_id,
-            STREAM_NAME
+            stream_name
         );
 
         let event: DomainEvent = event_log.clone().try_into()?;
@@ -114,7 +113,7 @@ impl Kinesis {
 
         self.client
             .put_record()
-            .stream_name(STREAM_NAME)
+            .stream_name(stream_name)
             .partition_key(event_log.aggregate_type)
             .data(Blob::new(data))
             .send()
