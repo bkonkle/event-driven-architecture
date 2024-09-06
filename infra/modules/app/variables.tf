@@ -1,3 +1,8 @@
+variable "account_id" {
+  type    = string
+  default = null
+}
+
 variable "region" {
   type    = string
   default = "us-west-2"

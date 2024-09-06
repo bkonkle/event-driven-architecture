@@ -21,6 +21,7 @@ terraform {
 module "app" {
   source = "../modules/app"
 
+  account_id  = local.account_id
   namespace   = var.namespace
   region      = var.region
   environment = var.environment

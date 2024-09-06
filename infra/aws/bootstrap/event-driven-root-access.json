@@ -10,31 +10,31 @@
         {
             "Sid": "S3ListAccess",
             "Effect": "Allow",
-            "Action": ["s3:ListAllMyBuckets"],
-            "Resource": ["*"]
+            "Action": "s3:ListAllMyBuckets",
+            "Resource": "*"
         },
         {
             "Sid": "DynamoDBScopedAccess",
             "Effect": "Allow",
-            "Action": ["dynamodb:*"],
-            "Resource": ["arn:aws:dynamodb:*:*:table/event-driven-*"]
+            "Action": "dynamodb:*",
+            "Resource": "arn:aws:dynamodb:*:*:table/event-driven-*"
         },
         {
             "Sid": "SQSScopedAccess",
             "Effect": "Allow",
-            "Action": ["sqs:*"],
-            "Resource": ["arn:aws:sqs:*:*:event-driven-*"]
+            "Action": "sqs:*",
+            "Resource": "arn:aws:sqs:*:*:event-driven-*"
         },
         {
             "Sid": "KinesisScopedAccess",
             "Effect": "Allow",
-            "Action": ["kinesis:*"],
-            "Resource": ["arn:aws:kinesis:*:*:stream/event-driven-*"]
+            "Action": "kinesis:*",
+            "Resource": "arn:aws:kinesis:*:*:stream/event-driven-*"
         },
         {
             "Sid": "CloudWatchLogScopedAccess",
             "Effect": "Allow",
-            "Action": ["logs:*"],
+            "Action": "logs:*",
             "Resource": [
                 "arn:aws:logs:*:*:log-group:/aws/lambda/event-driven-*",
                 "arn:aws:logs:*:*:log-group:/aws/lambda/event-driven-*:log-stream:*"
@@ -43,25 +43,39 @@
         {
             "Sid": "CloudWatchLogListAccess",
             "Effect": "Allow",
-            "Action": ["logs:DescribeLogGroups"],
-            "Resource": ["arn:aws:logs:*:*:log-group::log-stream:"]
+            "Action": "logs:DescribeLogGroups",
+            "Resource": "arn:aws:logs:*:*:log-group::log-stream:"
         },
         {
             "Sid": "LambdaScopedAccess",
             "Effect": "Allow",
-            "Action": ["lambda:*"],
-            "Resource": ["arn:aws:lambda:*:*:function:event-driven-*"]
+            "Action": "lambda:*",
+            "Resource": "arn:aws:lambda:*:*:function:event-driven-*"
+        },
+        {
+            "Sid": "LambdaEventSourceMappingGeneralAccess",
+            "Effect": "Allow",
+            "Action": [
+                "lambda:CreateEventSourceMapping",
+                "lambda:GetEventSourceMapping"
+            ],
+            "Resource": "*"
         },
         {
             "Sid": "LambdaEventSourceMappingAccess",
             "Effect": "Allow",
-            "Action": "lambda:CreateEventSourceMapping",
-            "Resource": "*"
+            "Action": [
+                "lambda:CreateEventSourceMapping",
+                "lambda:UpdateEventSourceMapping",
+                "lambda:DeleteEventSourceMapping",
+                "lambda:GetEventSourceMapping"
+            ],
+            "Resource": "arn:aws:lambda:*:*:event-source-mapping:*"
         },
         {
             "Sid": "IAMScopedAccess",
             "Effect": "Allow",
-            "Action": ["iam:*"],
+            "Action": "iam:*",
             "Resource": [
                 "arn:aws:iam::*:policy/event-driven-*",
                 "arn:aws:iam::*:role/event-driven-*",

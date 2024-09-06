@@ -16,18 +16,39 @@ module "lambda_publisher_kinesis" {
   runtime       = "provided.al2023"
 
   source_path = "../../target/lambda/publisher_kinesis"
-}
 
-resource "aws_lambda_event_source_mapping" "publisher_kinesis_dynamodb_trigger" {
-  event_source_arn       = module.dynamodb_event_log.dynamodb_table_stream_arn
-  function_name          = module.lambda_publisher_kinesis.lambda_function_arn
-  starting_position      = "LATEST"
-  maximum_retry_attempts = 5
+  attach_dead_letter_policy = true
+  dead_letter_target_arn    = module.sqs_publisher_kinesis_dead_letter.queue_arn
 
-  destination_config {
-    on_failure {
-      destination_arn = module.sqs_publisher_kinesis_dead_letter.queue_arn
+  event_source_mapping = {
+    dynamodb = {
+      event_source_arn           = module.dynamodb_event_log.dynamodb_table_stream_arn
+      starting_position          = "LATEST"
+      maximum_retry_attempts     = 5
+      destination_arn_on_failure = module.sqs_publisher_kinesis_dead_letter.queue_arn
     }
+  }
+
+  attach_policy_statements = true
+  policy_statements = {
+    dynamodb = {
+      effect = "Allow",
+      actions = [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:DescribeStream",
+        "dynamodb:ListStreams"
+      ]
+      resources = [module.dynamodb_event_log.dynamodb_table_stream_arn]
+    }
+    kinesis = {
+      effect = "Allow",
+      actions = [
+        "kinesis:PutRecord",
+        "kinesis:PutRecords"
+      ],
+      resources = [aws_kinesis_stream.event_stream.arn]
+    },
   }
 }
 
@@ -49,18 +70,33 @@ module "lambda_projector_s3_audit" {
   runtime       = "provided.al2023"
 
   source_path = "../../target/lambda/projector_s3_audit"
-}
 
-resource "aws_lambda_event_source_mapping" "projector_s3_audit_kinesis_trigger" {
-  event_source_arn        = resource.aws_kinesis_stream.event_stream.arn
-  function_name           = module.lambda_projector_s3_audit.lambda_function_arn
-  starting_position       = "LATEST"
-  maximum_retry_attempts  = 5
-  function_response_types = ["ReportBatchItemFailures"]
+  attach_dead_letter_policy = true
+  dead_letter_target_arn    = module.sqs_projector_s3_audit_dead_letter.queue_arn
 
-  destination_config {
-    on_failure {
-      destination_arn = module.sqs_s3_audit_dead_letter.queue_arn
+  event_source_mapping = {
+    kinesis = {
+      event_source_arn           = resource.aws_kinesis_stream.event_stream.arn
+      starting_position          = "LATEST"
+      maximum_retry_attempts     = 5
+      function_response_types    = ["ReportBatchItemFailures"]
+      destination_arn_on_failure = module.sqs_projector_s3_audit_dead_letter.queue_arn
     }
+  }
+
+  attach_policy_statements = true
+  policy_statements = {
+    kinesis = {
+      effect = "Allow",
+      actions = [
+        "kinesis:GetRecords",
+        "kinesis:GetShardIterator",
+        "kinesis:DescribeStream",
+        "kinesis:DescribeStreamSummary",
+        "kinesis:ListShards",
+        "kinesis:ListStreams"
+      ],
+      resources = [aws_kinesis_stream.event_stream.arn]
+    },
   }
 }
