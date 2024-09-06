@@ -26,6 +26,7 @@ use domains::tasks::{self, cqrs::init_repo, Task};
 use dynamo_es::DynamoEventRepository;
 use tower_http::trace;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+use utils::lambda;
 
 #[derive(Clone)]
 struct AppState {
@@ -36,12 +37,7 @@ struct AppState {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     if is_running_on_lambda() {
-        tracing_subscriber::fmt()
-            .with_max_level(tracing::Level::INFO)
-            .with_target(false)
-            .with_ansi(false)
-            .without_time()
-            .init();
+        lambda::tracing_subscriber_fmt();
     } else {
         tracing_subscriber::registry()
             .with(tracing_subscriber::EnvFilter::new(
@@ -52,6 +48,7 @@ async fn main() -> anyhow::Result<()> {
     }
 
     let localstack_endpoint = std::env::var("LOCALSTACK_ENDPOINT").unwrap_or_default();
+    let environment = std::env::var("ENV").unwrap_or_default();
 
     let mut config = aws_config::defaults(BehaviorVersion::latest());
     if localstack_endpoint != "" {
@@ -74,14 +71,18 @@ async fn main() -> anyhow::Result<()> {
                 .make_span_with(trace::DefaultMakeSpan::new().level(tracing::Level::INFO))
                 .on_response(trace::DefaultOnResponse::new().level(tracing::Level::INFO)),
         )
-        .route("/tasks", post(http::tasks_create))
-        .route(
-            "/tasks/:id",
-            get(http::tasks_get)
-                .patch(http::tasks_update)
-                .delete(http::tasks_delete),
-        )
-        .with_state(state);
+        .nest(
+            &format!("/{}", environment),
+            Router::new()
+                .route("/tasks", post(http::tasks_create))
+                .route(
+                    "/tasks/:id",
+                    get(http::tasks_get)
+                        .patch(http::tasks_update)
+                        .delete(http::tasks_delete),
+                )
+                .with_state(state),
+        );
 
     if is_running_on_lambda() {
         // To run with AWS Lambda runtime, wrap in our `LambdaLayer`

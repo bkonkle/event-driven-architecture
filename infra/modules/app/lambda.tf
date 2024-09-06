@@ -18,6 +18,13 @@ module "lambda_http_api" {
 
   source_path = "../../target/lambda/event-driven-architecture"
 
+  environment_variables = {
+    ENV                        = var.environment
+    EVENT_LOG_TABLE_NAME       = module.dynamodb_event_log.dynamodb_table_id
+    EVENT_SNAPSHOTS_TABLE_NAME = module.dynamodb_event_snapshots.dynamodb_table_id
+    TASKS_VIEW_TABLE_NAME      = module.dynamodb_tasks_view.dynamodb_table_id
+  }
+
   allowed_triggers = {
     apigateway = {
       service    = "apigateway"
@@ -30,12 +37,21 @@ module "lambda_http_api" {
     dynamodb = {
       effect = "Allow",
       actions = [
-        "dynamodb:GetRecords",
-        "dynamodb:GetShardIterator",
-        "dynamodb:DescribeStream",
-        "dynamodb:ListStreams"
+        "dynamodb:GetItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:BatchGetItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem"
       ]
-      resources = [module.dynamodb_event_log.dynamodb_table_stream_arn]
+      resources = [
+        module.dynamodb_event_log.dynamodb_table_arn,
+        module.dynamodb_event_snapshots.dynamodb_table_arn,
+        module.dynamodb_tasks_view.dynamodb_table_arn
+      ]
     }
   }
 
