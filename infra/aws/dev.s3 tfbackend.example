@@ -1,0 +1,4 @@
+bucket = "event-driven-us-west-2-tf-state"
+dynamodb_table = "event-driven-tf-locks"
+key = "env/dev/terraform.tfstate"
+region = "us-west-2"

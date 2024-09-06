@@ -1,4 +1,7 @@
-use aws_lambda_events::dynamodb::{Event, EventRecord};
+use aws_lambda_events::{
+    dynamodb::{Event, EventRecord},
+    streams::{DynamoDbBatchItemFailure, DynamoDbEventResponse},
+};
 use aws_sdk_kinesis::primitives::Blob;
 use derive_new::new;
 use lambda_runtime::LambdaEvent;
@@ -51,7 +54,10 @@ impl TryFrom<EventLogRecord> for DomainEvent {
 }
 
 impl Kinesis {
-    pub async fn handle(&self, event: LambdaEvent<Event>) -> Result<(), lambda_runtime::Error> {
+    pub async fn handle(
+        &self,
+        event: LambdaEvent<Event>,
+    ) -> Result<DynamoDbEventResponse, lambda_runtime::Error> {
         tracing::info!(
             "Processing batch of {} events from DynamoDB",
             event.payload.records.len(),
@@ -59,9 +65,24 @@ impl Kinesis {
 
         for record in event.payload.records {
             if record.event_name == "INSERT" {
-                tracing::info!("Handling record id: {}", record.event_id);
+                let event_id = record.event_id.clone();
 
-                self.handle_record(&record).await?;
+                tracing::info!("Handling record id: {}", event_id);
+
+                if let Err(error) = self.handle_record(&record).await {
+                    tracing::error!(
+                        error = ?error, event_id = event_id,
+                        "Failed to process event"
+                    );
+
+                    // Return the failed item right away since this is within a stream. Lambda will
+                    // begin to retry processing from this failed item onwards.
+                    return Ok(DynamoDbEventResponse {
+                        batch_item_failures: vec![DynamoDbBatchItemFailure {
+                            item_identifier: Some(event_id),
+                        }],
+                    });
+                };
             } else {
                 tracing::info!(
                     "Ignoring event {} for id: {}",
@@ -71,7 +92,9 @@ impl Kinesis {
             }
         }
 
-        Ok(())
+        Ok(DynamoDbEventResponse {
+            batch_item_failures: vec![],
+        })
     }
 
     pub async fn handle_record(&self, record: &EventRecord) -> Result<(), lambda_runtime::Error> {
