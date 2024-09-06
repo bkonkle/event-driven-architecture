@@ -17,3 +17,11 @@ terraform {
     }
   }
 }
+
+module "app" {
+  source = "../modules/app"
+
+  namespace   = var.namespace
+  region      = var.region
+  environment = var.environment
+}

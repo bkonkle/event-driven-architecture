@@ -1,4 +1,7 @@
+export AWS_PROFILE=local
 export AWS_REGION=us-west-2
-export AWS_ACCESS_KEY_ID=test
-export AWS_SECRET_ACCESS_KEY=test
 export LOCALSTACK_ENDPOINT=http://localhost:4566
+
+export DYNAMODB_EVENT_LOG_TABLE_NAME=event-driven-local-event-log
+export DYNAMODB_EVENT_SNAPSHOTS_TABLE_NAME=event-driven-local-event-snapshots
+export DYNAMODB_TASKS_VIEW_TABLE_NAME=event-driven-local-tasks-view

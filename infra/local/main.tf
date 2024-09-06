@@ -49,3 +49,10 @@ terraform {
 locals {
   region = "us-west-2"
 }
+
+module "app" {
+  source = "../modules/app"
+
+  environment = "local"
+  region      = "us-west-2"
+}

@@ -1,5 +1,14 @@
+module "label_event_stream" {
+  source    = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.25.0"
+  namespace = var.namespace
+  stage     = var.environment
+  name      = "event-stream"
+  tags      = local.common_tags
+  delimiter = "-"
+}
+
 resource "aws_kinesis_stream" "event_stream" {
-  name                      = "event-stream"
+  name                      = module.label_event_stream.id
   retention_period          = 24
   enforce_consumer_deletion = true
   encryption_type           = "KMS"

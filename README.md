@@ -26,58 +26,7 @@ The API process runs locally, and will be mounted on API Gateway when deployed.
 
 ## Deployment
 
-First, create an AWS user for your project root. If you call your project namespace "event-driven", then your user would be "event-driven-root". This should not be a login user, but should have CLI access for Terraform. It should have a set of permissions similar to the following:
-
-```json
-{
- "Version": "2012-10-17",
- "Statement": [
-  {
-   "Sid": "S3ScopedAccess",
-   "Effect": "Allow",
-   "Action": [
-    "s3:*"
-   ],
-   "Resource": [
-    "arn:aws:s3:::event-driven-*"
-   ]
-  },
-  {
-   "Sid": "S3ListAccess",
-   "Effect": "Allow",
-   "Action": [
-    "s3:ListAllMyBuckets"
-   ],
-   "Resource": [
-    "*"
-   ]
-  },
-  {
-   "Sid": "DynamoDBScopedAccess",
-   "Effect": "Allow",
-   "Action": [
-    "dynamodb:*"
-   ],
-   "Resource": [
-    "arn:aws:dynamodb:*:*:table/event-driven-*"
-   ]
-  },
-  {
-   "Sid": "IAMScopedAccess",
-   "Effect": "Allow",
-   "Action": [
-    "iam:*"
-   ],
-   "Resource": [
-    "arn:aws:iam::*:policy/event-driven-*",
-    "arn:aws:iam::*:role/event-driven-*",
-    "arn:aws:iam::*:group/event-driven-*",
-    "arn:aws:iam::*:user/event-driven-*"
-   ]
-  }
- ]
-}
-```
+First, create an AWS user for your project root. If you call your project namespace "event-driven", then your user would be "event-driven-root". This should not be a login user, but should have CLI access for Terraform. It should have a set of permissions similar to the policy json in `infra/aws/bootstrap/event-driven-root-access.json`.
 
 Generate an access token, and save the credentials to `~/.aws/credentials` with a profile name of `event-driven-root`.
 

@@ -1,7 +1,16 @@
+module "label_publisher_kinesis" {
+  source    = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.25.0"
+  namespace = var.namespace
+  stage     = var.environment
+  name      = "publisher-kinesis"
+  tags      = local.common_tags
+  delimiter = "-"
+}
+
 module "lambda_publisher_kinesis" {
   source = "terraform-aws-modules/lambda/aws"
 
-  function_name = "publisher-kinesis"
+  function_name = module.label_publisher_kinesis.id
   description   = "The Kinesis domain event Publisher"
   handler       = "bootstrap"
   runtime       = "provided.al2023"
@@ -22,10 +31,19 @@ resource "aws_lambda_event_source_mapping" "publisher_kinesis_dynamodb_trigger" 
   }
 }
 
+module "label_projector_s3_audit" {
+  source    = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.25.0"
+  namespace = var.namespace
+  stage     = var.environment
+  name      = "projector-s3-audit"
+  tags      = local.common_tags
+  delimiter = "-"
+}
+
 module "lambda_projector_s3_audit" {
   source = "terraform-aws-modules/lambda/aws"
 
-  function_name = "projector-s3-audit"
+  function_name = module.label_projector_s3_audit.id
   description   = "The S3 audit Projector"
   handler       = "bootstrap"
   runtime       = "provided.al2023"
