@@ -9,6 +9,7 @@ module "label_event_stream" {
 
 resource "aws_kinesis_stream" "event_stream" {
   name                      = module.label_event_stream.id
+  shard_count               = 1
   retention_period          = 24
   enforce_consumer_deletion = true
   encryption_type           = "KMS"
@@ -20,6 +21,6 @@ resource "aws_kinesis_stream" "event_stream" {
   ]
 
   stream_mode_details {
-    stream_mode = "ON_DEMAND"
+    stream_mode = "PROVISIONED"
   }
 }

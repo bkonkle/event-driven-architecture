@@ -28,9 +28,8 @@ impl S3Audit {
             event.payload.records.len(),
         );
 
-        let mut batch_item_failures = Vec::new();
-
-        for record in event.payload.records {
+        let mut iter = event.payload.records.iter();
+        while let Some(record) = iter.next() {
             let sequence_number = record.kinesis.sequence_number.clone();
 
             tracing::info!(
@@ -45,19 +44,29 @@ impl S3Audit {
                     "Failed to process event"
                 );
 
-                // Add the failed item to the list of failures
-                batch_item_failures.push(KinesisBatchItemFailure {
+                let error = KinesisBatchItemFailure {
                     item_identifier: sequence_number,
+                };
+
+                // To preserve order, fail all remaining items in the batch in addition to this one
+                let batch_item_failures: Vec<_> = std::iter::once(error)
+                    .chain(iter.by_ref().cloned().map(|rec| KinesisBatchItemFailure {
+                        item_identifier: rec.kinesis.sequence_number,
+                    }))
+                    .collect();
+
+                return Ok(KinesisEventResponse {
+                    batch_item_failures,
                 });
             };
         }
 
         Ok(KinesisEventResponse {
-            batch_item_failures,
+            batch_item_failures: vec![],
         })
     }
 
-    async fn handle_record(&self, record: KinesisEventRecord) -> Result<(), Error> {
+    async fn handle_record(&self, record: &KinesisEventRecord) -> Result<(), Error> {
         let bucket_name = std::env::var("AUDIT_BUCKET_NAME").unwrap_or_default();
 
         let record_data = std::str::from_utf8(&record.kinesis.data)
