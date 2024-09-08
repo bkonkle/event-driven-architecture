@@ -9,8 +9,8 @@ module "label_event_stream" {
 
 resource "aws_kinesis_stream" "event_stream" {
   name                      = module.label_event_stream.id
-  shard_count               = 1
-  retention_period          = 24
+  shard_count               = var.environment == "prod" ? null : 1
+  retention_period          = var.environment == "prod" ? 48 : 24
   enforce_consumer_deletion = true
   encryption_type           = "KMS"
   kms_key_id                = "alias/aws/kinesis"
@@ -21,6 +21,6 @@ resource "aws_kinesis_stream" "event_stream" {
   ]
 
   stream_mode_details {
-    stream_mode = "PROVISIONED"
+    stream_mode = var.environment == "prod" ? "ON_DEMAND" : "PROVISIONED"
   }
 }
