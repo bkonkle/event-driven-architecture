@@ -61,8 +61,9 @@ impl Kinesis {
             event.payload.records.len(),
         );
 
-        let mut iter = event.payload.records.iter();
-        while let Some(record) = iter.next() {
+        let mut batch_item_failures = Vec::new();
+
+        for record in event.payload.records.iter() {
             if record.event_name == "INSERT" {
                 let event_id = record.event_id.clone();
 
@@ -74,19 +75,8 @@ impl Kinesis {
                         "Failed to process event"
                     );
 
-                    let error = DynamoDbBatchItemFailure {
+                    batch_item_failures.push(DynamoDbBatchItemFailure {
                         item_identifier: Some(event_id),
-                    };
-
-                    // To preserve order, fail all remaining items in the batch in addition to this one
-                    let batch_item_failures: Vec<_> = std::iter::once(error)
-                        .chain(iter.by_ref().cloned().map(|rec| DynamoDbBatchItemFailure {
-                            item_identifier: Some(rec.event_id),
-                        }))
-                        .collect();
-
-                    return Ok(DynamoDbEventResponse {
-                        batch_item_failures,
                     });
                 };
             } else {
@@ -99,7 +89,7 @@ impl Kinesis {
         }
 
         Ok(DynamoDbEventResponse {
-            batch_item_failures: vec![],
+            batch_item_failures,
         })
     }
 
