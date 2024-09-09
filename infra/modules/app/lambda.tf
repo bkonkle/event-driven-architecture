@@ -163,6 +163,7 @@ module "lambda_projector_s3_audit" {
     kinesis = {
       event_source_arn           = resource.aws_kinesis_stream.event_stream.arn
       starting_position          = "LATEST"
+      batch_size                 = 1
       maximum_retry_attempts     = 5
       function_response_types    = ["ReportBatchItemFailures"]
       destination_arn_on_failure = module.sqs_projector_s3_audit_dead_letter.queue_arn
