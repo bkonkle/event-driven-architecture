@@ -18,6 +18,11 @@ variable "environment" {
   default = "dev"
 }
 
+variable "enable_api_gateway" {
+  type    = bool
+  default = true
+}
+
 locals {
   common_tags = {
     ProvisionedBy = "terraform"

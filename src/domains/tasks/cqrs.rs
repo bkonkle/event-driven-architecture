@@ -31,6 +31,7 @@ pub fn init(
     Arc::new(CqrsFramework::new(store, vec![query], Services::default()))
 }
 
+/// Initialize the Tasks View Repository
 pub fn init_repo(client: aws_sdk_dynamodb::Client) -> Arc<Box<dyn ViewRepository<View, Task>>> {
     let tasks_view_table =
         env::var("TASKS_VIEW_TABLE_NAME").unwrap_or("event-driven-dev-tasks-view".to_string());

@@ -15,6 +15,7 @@ pub struct Kinesis {
     client: aws_sdk_kinesis::Client,
 }
 
+/// The Event Log Record decoded from the DynamoDB change "new image"
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct EventLogRecord {
@@ -52,6 +53,7 @@ impl TryFrom<EventLogRecord> for DomainEvent {
 }
 
 impl Kinesis {
+    /// Handle the DynamoDB event and publish the domain event to the Kinesis stream
     pub async fn handle(
         &self,
         event: LambdaEvent<Event>,
@@ -93,7 +95,7 @@ impl Kinesis {
         })
     }
 
-    pub async fn handle_record(&self, record: &EventRecord) -> Result<(), lambda_runtime::Error> {
+    async fn handle_record(&self, record: &EventRecord) -> Result<(), lambda_runtime::Error> {
         let stream_name = std::env::var("EVENT_STREAM_NAME").unwrap_or_default();
 
         let item = &record.change.new_image;

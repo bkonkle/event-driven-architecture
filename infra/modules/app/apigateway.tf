@@ -9,6 +9,7 @@ module "label_api_gateway" {
 
 module "api_gateway" {
   source = "terraform-aws-modules/apigateway-v2/aws"
+  count  = var.enable_api_gateway ? 1 : 0
 
   name               = module.label_api_gateway.id
   description        = "API Gateway for the HTTP API"
@@ -21,7 +22,7 @@ module "api_gateway" {
 
       integration = {
         type                   = "AWS_PROXY"
-        uri                    = module.lambda_http_api.lambda_function_arn
+        uri                    = var.enable_api_gateway ? module.lambda_http_api.lambda_function_arn : null
         payload_format_version = "2.0"
         timeout_milliseconds   = 12000
       }
@@ -29,7 +30,7 @@ module "api_gateway" {
 
     "$default" = {
       integration = {
-        uri = module.lambda_http_api.lambda_function_arn
+        uri = var.enable_api_gateway ? module.lambda_http_api.lambda_function_arn : null
 
         response_parameters = [
           {

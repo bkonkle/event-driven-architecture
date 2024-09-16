@@ -9,6 +9,7 @@ module "label_http_api" {
 
 module "lambda_http_api" {
   source = "terraform-aws-modules/lambda/aws"
+  count  = var.enable_api_gateway ? 1 : 0
 
   function_name = module.label_http_api.id
   description   = "The HTTP API"
@@ -28,7 +29,7 @@ module "lambda_http_api" {
   allowed_triggers = {
     apigateway = {
       service    = "apigateway"
-      source_arn = "${module.api_gateway.api_execution_arn}/*/*"
+      source_arn = var.enable_api_gateway ? "${module.api_gateway.api_execution_arn}/*/*" : null
     }
   }
 

@@ -53,6 +53,7 @@ locals {
 module "app" {
   source = "../modules/app"
 
-  environment = "local"
-  region      = "us-west-2"
+  environment        = "local"
+  region             = "us-west-2"
+  enable_api_gateway = false
 }

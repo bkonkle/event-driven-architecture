@@ -1,3 +1,5 @@
+//! The Kinesis publisher entry point
+
 use aws_config::BehaviorVersion;
 use aws_lambda_events::event::dynamodb::Event;
 use event_driven_architecture::{publishers, utils::lambda};

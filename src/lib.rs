@@ -1,3 +1,5 @@
+//! A demo project for a simple CQRS/ES workflow
+
 /// Event domains
 pub mod domains;
 

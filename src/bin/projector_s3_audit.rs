@@ -1,3 +1,5 @@
+//! The S3 Audit projector entry point
+
 use aws_config::BehaviorVersion;
 use aws_lambda_events::event::kinesis::KinesisEvent;
 use event_driven_architecture::{projectors::s3_audit::S3Audit, utils::lambda};

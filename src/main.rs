@@ -1,4 +1,4 @@
-//! # A demo project for a simple CQRS/ES workflow
+//! A demo project for a simple CQRS/ES workflow
 #![forbid(unsafe_code)]
 
 mod domains;
@@ -11,7 +11,7 @@ extern crate log;
 use std::{io, panic::PanicInfo, sync::Arc};
 
 use anyhow::anyhow;
-use aws_config::BehaviorVersion;
+use aws_config::{environment, BehaviorVersion};
 use axum::{
     routing::{get, post},
     Router,
@@ -65,6 +65,12 @@ async fn main() -> anyhow::Result<()> {
         tasks_cqrs: tasks::cqrs::init(client.clone(), tasks_repo),
     };
 
+    let env_path = if environment == "local" {
+        "".to_string()
+    } else {
+        format!("/{}", environment)
+    };
+
     let app = Router::new()
         .layer(
             trace::TraceLayer::new_for_http()
@@ -72,7 +78,7 @@ async fn main() -> anyhow::Result<()> {
                 .on_response(trace::DefaultOnResponse::new().level(tracing::Level::INFO)),
         )
         .nest(
-            &format!("/{}", environment),
+            &env_path,
             Router::new()
                 .route("/tasks", post(http::tasks_create))
                 .route(

@@ -13,12 +13,14 @@ use crate::{
     utils,
 };
 
+/// The S3 Audit projector
 #[derive(Clone, Debug, new)]
 pub struct S3Audit {
     client: aws_sdk_s3::Client,
 }
 
 impl S3Audit {
+    /// Handle the Kinesis event and run the projection
     pub async fn handle(
         &self,
         event: LambdaEvent<KinesisEvent>,
@@ -97,9 +99,11 @@ impl S3Audit {
 /// S3 Audit errors
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
+    /// Utf8 conversion error
     #[error("Utf8 conversion error: {0}")]
     Utf8(#[from] Utf8Error),
 
+    /// JSON conversion error
     #[error("JSON conversion error: {0}")]
     Json(#[from] serde_json::Error),
 
@@ -107,6 +111,7 @@ pub enum Error {
     #[error("Invalid summary: {0}")]
     InvalidSummary(String),
 
+    /// S3 Put Object error
     #[error("S3 Put Object error: {0}")]
     S3PutError(#[from] SdkError<PutObjectError>),
 }

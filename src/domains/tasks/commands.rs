@@ -6,7 +6,13 @@ use super::inputs;
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 pub enum Command {
     /// Create a new Task
-    Create { id: String, input: inputs::Create },
+    Create {
+        /// The Task ID to create (auto-generated in the http Create handler)
+        id: String,
+
+        /// The Create input
+        input: inputs::Create,
+    },
 
     /// Update an existing Task
     Update(inputs::Update),
