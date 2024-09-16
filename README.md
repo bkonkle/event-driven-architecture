@@ -1,5 +1,7 @@
 # Event Driven APIs with AWS Kinesis
 
+![https://github.com/bkonkle/event-driven-architecture/blob/main/docs/overview-diagram.png?raw=true](Overview Diagram)
+
 ## Local Development
 
 This is a work-in-progress. Since API Gateway is a premium LocalStack feature, my goal is to run locally without it using a local process. It will connect to LocalStack for DynamoDB and the downstream Kinesis and Lambda operations that it will trigger, however.
