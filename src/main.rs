@@ -11,7 +11,7 @@ extern crate log;
 use std::{io, panic::PanicInfo, sync::Arc};
 
 use anyhow::anyhow;
-use aws_config::{environment, BehaviorVersion};
+use aws_config::BehaviorVersion;
 use axum::{
     routing::{get, post},
     Router,
