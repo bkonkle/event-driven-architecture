@@ -1,6 +1,6 @@
 # Event Driven APIs with AWS Kinesis
 
-![https://github.com/bkonkle/event-driven-architecture/blob/main/docs/overview-diagram.png?raw=true](Overview Diagram)
+![Overview Diagram](https://github.com/bkonkle/event-driven-architecture/blob/main/docs/overview-diagram.png?raw=true)
 
 ## Local Development
 
