@@ -6,3 +6,5 @@ terraform.tfstate
 terraform.tfstate.*
 builds
 *.tfbackend
+terraform.tfvars
+terraform.tfvars.json

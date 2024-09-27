@@ -29,7 +29,7 @@ module "lambda_http_api" {
   allowed_triggers = {
     apigateway = {
       service    = "apigateway"
-      source_arn = var.enable_api_gateway ? "${module.api_gateway.api_execution_arn}/*/*" : null
+      source_arn = var.enable_api_gateway ? "${module.api_gateway[0].api_execution_arn}/*/*" : null
     }
   }
 

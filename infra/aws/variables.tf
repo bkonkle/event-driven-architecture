@@ -15,6 +15,16 @@ variable "environment" {
   default = "dev"
 }
 
+variable "developers" {
+  type = map(object({
+    path                 = optional(string, "/")
+    permissions_boundary = optional(string, "")
+    login_profile        = optional(bool, false)
+    pgp_key              = optional(string, "")
+    access_key           = optional(bool, false)
+  }))
+}
+
 locals {
   account_id = data.aws_caller_identity.current.account_id
 

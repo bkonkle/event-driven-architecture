@@ -22,7 +22,7 @@ module "api_gateway" {
 
       integration = {
         type                   = "AWS_PROXY"
-        uri                    = var.enable_api_gateway ? module.lambda_http_api.lambda_function_arn : null
+        uri                    = var.enable_api_gateway ? module.lambda_http_api[0].lambda_function_arn : null
         payload_format_version = "2.0"
         timeout_milliseconds   = 12000
       }
@@ -30,7 +30,7 @@ module "api_gateway" {
 
     "$default" = {
       integration = {
-        uri = var.enable_api_gateway ? module.lambda_http_api.lambda_function_arn : null
+        uri = var.enable_api_gateway ? module.lambda_http_api[0].lambda_function_arn : null
 
         response_parameters = [
           {
